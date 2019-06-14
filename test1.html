@@ -56,11 +56,18 @@ if(window.addEventListener) {
         canvas.addEventListener('keypress', ev_canvas, true);
         canvas.addEventListener('keydown', ev_canvas, true);
         canvas.addEventListener('touchmove', ev_canvas, true);
-        canvas.addEventListener('touchstart', ev_canvas, true);
+        canvas.addEventListener('touchstart', ev_canvas, true); 
+        /*
         window.addEventListener('orientationchange', function(){
 //            alert(window.innerHeight);
             reinit_resize_canvas();
         }, false);
+        */
+        window.addEventListener('orientationchange', function () {
+            orientationChanged().then(function() {
+              reinit_resize_canvas();
+            });
+        });
     }
 
     /*  To check if this needs to be done
@@ -68,6 +75,18 @@ if(window.addEventListener) {
         init_canvas_size();
     }, false);
     */
+
+   function orientationChanged() {
+    const timeout = 120;
+    return new window.Promise(function(resolve) {
+      const go = (i, height0) => {
+        window.innerHeight != height0 || i >= timeout ?
+          resolve() :
+          window.requestAnimationFrame(() => go(i + 1, height0));
+      };
+      go(0, window.innerHeight);
+    });
+  }
     function init_canvas_size() {
         canvas.width  = Math.round(window.innerWidth  * 80 / 100);  // integer pixels
         canvas.height = Math.round(window.innerHeight * 80 / 100);
