@@ -57,9 +57,9 @@ if(window.addEventListener) {
         canvas.addEventListener('keydown', ev_canvas, true);
         canvas.addEventListener('touchmove', ev_canvas, true);
         window.addEventListener('orientationchange', function(){
-            alert(window.innerHeight);
+//            alert(window.innerHeight);
             reinit_resize_canvas();
-        });
+        }, false);
     }
 
     /*  To check if this needs to be done
@@ -99,15 +99,16 @@ if(window.addEventListener) {
         this.touchmove = function (ev) {
             var x = ev.touches[0].clientX;
             var y = ev.touches[0].clientY;
+            var xy = {_x: x, _y: y};
             if(!penUP) {
                 context.lineTo(x, y);
                 context.stroke();
                 line_state.push({x:x, y:y, c:color, t:'lineTo'});
-                drawpen(ev);
+                drawpen(xy);
             } else {
                 line_state.push({x:x, y:y, c:color, t:'moveTo'});
                 context.moveTo(x, y);
-                drawpen(ev);
+                drawpen(xy);
                 c_x = x; 
                 c_y = y;
             }
