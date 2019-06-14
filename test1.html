@@ -126,7 +126,7 @@ if(window.addEventListener) {
         function drawpen(ev) {
             var x = ev._x - 15;
             var y = ev._y - 15;
-            alert('xy: ' + x + ':' + y);
+          //  alert('xy: ' + x + ':' + y);
             context.clearRect(0, 0, canvas.width, canvas.height);
             redraw();
             context.strokeRect(x, y, 30, 30);
