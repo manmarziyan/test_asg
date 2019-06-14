@@ -17,40 +17,40 @@
 if(window.addEventListener) {
     window.addEventListener('load', function () {
     var canvas, context, tool, c_x, c_y;
-    var line_state = [];
-    var color = 'red';
-    var penUP = false;
-    var touchOn = false;
+    var line_state = []; //Store all drawing history
+    var color = 'red'; // Default color
+    var penUP = false; // Track Pen UP/DOWN
+    var touchOn = false; // Track Touch Start/End movement
 
     function init () {
-        // Find the canvas element.
         canvas = document.getElementById('canvas');
         if (!canvas) {
-        alert('Error: I cannot find the canvas element!');
-        return;
+            alert('Error: I cannot find the canvas element!');
+            return;
         }
 
         if (!canvas.getContext) {
-        alert('Error: no canvas.getContext!');
-        return;
+            alert('Error: no canvas.getContext!');
+            return;
         }
 
+        // resize canvas to 80% of window width and height 
         init_canvas_size();
 
-        // Get the 2D canvas context.
         context = canvas.getContext('2d');
         if (!context) {
-        alert('Error: failed to getContext!');
-        return;
+            alert('Error: failed to getContext!');
+            return;
         }
 
+        // Default color and mouse 
         context.strokeStyle = color;
         context.strokeRect(0, 0, 30, 30);
 
-        // Pencil tool instance.
-        tool = new tool_pencil();
+        // Create a new pen
+        tool = new pen();
 
-        // Attach the mousedown, mousemove and mouseup event listeners.
+        // All the event listeners.
         canvas.addEventListener('mousedown', ev_canvas, false);
         canvas.addEventListener('mousemove', ev_canvas, false);
         canvas.addEventListener('mouseup',   ev_canvas, false);
@@ -59,12 +59,8 @@ if(window.addEventListener) {
         canvas.addEventListener('touchmove', ev_canvas, true);
         canvas.addEventListener('touchstart', ev_canvas, true); 
         canvas.addEventListener('touchend', ev_canvas, true); 
-        /*
-        window.addEventListener('orientationchange', function(){
-//            alert(window.innerHeight);
-            reinit_resize_canvas();
-        }, false);
-        */
+   
+        // requires special handling due to unreliable innerHeight when mobile orientation changes. 
         window.addEventListener('orientationchange', function () {
             orientationChanged().then(function() {
               reinit_resize_canvas();
@@ -72,29 +68,30 @@ if(window.addEventListener) {
         });
     }
 
-    /*  To check if this needs to be done
+    /*  To check if this needs to be done. 
     window.addEventListener('resize', function(){
         init_canvas_size();
     }, false);
     */
-
+    // Wait for 120 frames to see if height has stabilized. 
    function orientationChanged() {
-    const timeout = 120;
-    return new window.Promise(function(resolve) {
-      const go = (i, height0) => {
-        window.innerHeight != height0 || i >= timeout ?
-          resolve() :
-          window.requestAnimationFrame(() => go(i + 1, height0));
-      };
-      go(0, window.innerHeight);
-    });
-  }
+        const timeout = 120;
+        return new window.Promise(function(resolve) {
+        const go = (i, height0) => {
+            window.innerHeight != height0 || i >= timeout ?
+            resolve() :
+            window.requestAnimationFrame(() => go(i + 1, height0));
+        };
+        go(0, window.innerHeight);
+        });
+    }
+
     function init_canvas_size() {
-        canvas.width  = Math.round(window.innerWidth  * 80 / 100);  // integer pixels
+        canvas.width  = Math.round(window.innerWidth  * 80 / 100);  
         canvas.height = Math.round(window.innerHeight * 80 / 100);
     }
 
-    function tool_pencil () {
+    function pen() {
         var tool = this;
         this.started = false;
 
@@ -118,12 +115,15 @@ if(window.addEventListener) {
             }
         };
 
+        // Do nothing for now
+        this.mouseup = function (ev) {
+        };
+
         this.touchstart = function (ev) {
             touchOn = true;
             context.beginPath();
             context.moveTo(ev.touches[0].clientX, ev.touches[0].clientY);  
             line_state.push({x:ev.touches[0].clientX, y:ev.touches[0].clientY, c:color, t:'moveTo'});
-//            alert('Touch On');         
          };
  
         this.touchmove = function (ev) {
@@ -136,29 +136,15 @@ if(window.addEventListener) {
                 line_state.push({x:x, y:y, c:color, t:'lineTo'});
                 drawpen(xy);
             } 
-            /*
-            else {
-                line_state.push({x:x, y:y, c:color, t:'moveTo'});
-                context.moveTo(x, y);
-                drawpen(xy);
-                c_x = x; 
-                c_y = y;
-            }
-            */
         };
 
         this.touchend = function (ev) {
             touchOn = false;
-  //          alert('Touch end');
          };
-
-        this.mouseup = function (ev) {
-        };
 
         function drawpen(ev) {
             var x = ev._x - 15;
             var y = ev._y - 15;
-       //     alert('xy: ' + x + ':' + y);
             context.clearRect(0, 0, canvas.width, canvas.height);
             redraw();
             context.strokeRect(x, y, 30, 30);
@@ -198,19 +184,16 @@ if(window.addEventListener) {
             } else if(ev.keyCode == 121) {
                 color = context.strokeStyle = 'yellow';
             } else if(ev.keyCode == 32) { 
-                // Clear canvas
-                context.clearRect(0,0, canvas.width, canvas.height);
-                line_state = []
-                color = 'red';
-                context.strokeStyle = 'red';
+                // Space button -> Clear canvas
+                clear_canvas();
             }   else {
                 console.log('KP: ' + ev.keyCode);
             }
         }
 
+        // Handle Arrow Keys 
         this.keydown = function(ev) {
             // UP: 38, Down: 40
-            console.log('KD: ' + ev.keyCode);
             if(ev.keyCode == 38) {
                 penUP = true;
                 context.beginPath();
@@ -218,38 +201,37 @@ if(window.addEventListener) {
                 context.beginPath();
                 context.moveTo(c_x, c_y);
                 penUP = false;
-
             }
         }
     }
 
-    function reinit_resize_canvas() {
+    function clear_canvas() {
         context.clearRect(0,0, canvas.width, canvas.height);
         line_state = []
         color = 'red';
         context.strokeStyle = 'red';
+    }
+    function reinit_resize_canvas() {
+        clear_canvas();
         init_canvas_size();
     }
-  // The general-purpose event handler. This function just determines the mouse 
-  // position relative to the canvas element.
-  function ev_canvas (ev) {
-    if (ev.layerX || ev.layerX == 0) { // Firefox
-      ev._x = ev.layerX;
-      ev._y = ev.layerY;
-    } else if (ev.offsetX || ev.offsetX == 0) { // Opera
-      ev._x = ev.offsetX;
-      ev._y = ev.offsetY;
+
+    function ev_canvas (ev) {
+        if (ev.layerX || ev.layerX == 0) { // Firefox
+            ev._x = ev.layerX;
+            ev._y = ev.layerY;
+        } else if (ev.offsetX || ev.offsetX == 0) { // Opera
+            ev._x = ev.offsetX;
+            ev._y = ev.offsetY;
+        }
+        // Call the event handler of the pen
+        var func = tool[ev.type];
+        if (func) {
+        func(ev);
+        }
     }
-
-    // Call the event handler of the tool.
-    var func = tool[ev.type];
-    if (func) {
-      func(ev);
-    }
-  }
-
-  init();
-
+    
+    init();
 }, false); }
 </script>
  </head>
