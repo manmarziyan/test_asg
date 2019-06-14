@@ -58,6 +58,7 @@ if(window.addEventListener) {
         canvas.addEventListener('keydown', ev_canvas, true);
         canvas.addEventListener('touchmove', ev_canvas, true);
         canvas.addEventListener('touchstart', ev_canvas, true); 
+        canvas.addEventListener('touchend', ev_canvas, true); 
         /*
         window.addEventListener('orientationchange', function(){
 //            alert(window.innerHeight);
@@ -120,7 +121,8 @@ if(window.addEventListener) {
         this.touchstart = function (ev) {
             touchOn = true;
             context.beginPath();
-            context.moveTo(ev.touches[0].clientX, ev.touches[0].clientY);           
+            context.moveTo(ev.touches[0].clientX, ev.touches[0].clientY);  
+//            alert('Touch On');         
          };
  
         this.touchmove = function (ev) {
