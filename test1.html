@@ -122,7 +122,8 @@ if(window.addEventListener) {
             touchOn = true;
             context.beginPath();
             context.moveTo(ev.touches[0].clientX, ev.touches[0].clientY);  
-           // alert('Touch On');         
+            line_state.push({x:ev.touches[0].clientX, y:ev.touches[0].clientY, c:color, t:'moveTo'});
+//            alert('Touch On');         
          };
  
         this.touchmove = function (ev) {
@@ -134,18 +135,21 @@ if(window.addEventListener) {
                 context.stroke();
                 line_state.push({x:x, y:y, c:color, t:'lineTo'});
                 drawpen(xy);
-            } else {
+            } 
+            /*
+            else {
                 line_state.push({x:x, y:y, c:color, t:'moveTo'});
                 context.moveTo(x, y);
                 drawpen(xy);
                 c_x = x; 
                 c_y = y;
             }
+            */
         };
 
         this.touchend = function (ev) {
             touchOn = false;
-            alert('Touch end');
+  //          alert('Touch end');
          };
 
         this.mouseup = function (ev) {
@@ -187,7 +191,6 @@ if(window.addEventListener) {
             context.beginPath();
             if(ev.keyCode == 98) {
                 color = context.strokeStyle = 'blue';
-                console.log('C: ' + context.strokeStyle);
             } else if(ev.keyCode == 103) {
                 color = context.strokeStyle = 'green';
             } else if(ev.keyCode == 114) {
