@@ -46,6 +46,9 @@ if(window.addEventListener) {
         canvas.addEventListener('keypress', ev_canvas, true);
         canvas.addEventListener('keydown', ev_canvas, true);
         canvas.addEventListener('touchmove', ev_canvas, true);
+        window.addEventListener('orientationchange', function(){
+            reinit_resize_canvas();
+        });
     }
 
     /*  To check if this needs to be done
