@@ -69,15 +69,8 @@ if(window.addEventListener) {
     }, false);
     */
     function init_canvas_size() {
-        var w = window.screen.width/window.devicePixelRatio;
-        var h = window.screen.height/window.devicePixelRatio;
-        /*
         canvas.width  = Math.round(window.innerWidth  * 80 / 100);  // integer pixels
         canvas.height = Math.round(window.innerHeight * 80 / 100);
-        */
-        canvas.width  = Math.round(w  * 80 / 100);  // integer pixels
-        canvas.height = Math.round(h * 80 / 100);
-        alert('wh' + canvas.width + ":" + canvas.height);
     }
 
     function tool_pencil () {
