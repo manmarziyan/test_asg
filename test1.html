@@ -56,6 +56,7 @@ if(window.addEventListener) {
         canvas.addEventListener('keypress', ev_canvas, true);
         canvas.addEventListener('keydown', ev_canvas, true);
         canvas.addEventListener('touchmove', ev_canvas, true);
+        canvas.addEventListener('touchstart', ev_canvas, true);
         window.addEventListener('orientationchange', function(){
 //            alert(window.innerHeight);
             reinit_resize_canvas();
@@ -96,6 +97,11 @@ if(window.addEventListener) {
             }
         };
 
+        this.touchstart = function (ev) {
+            context.beginPath();
+            context.moveTo(ev.touches[0].clientX, ev.touches[0].clientY);           
+         };
+ 
         this.touchmove = function (ev) {
             var x = ev.touches[0].clientX;
             var y = ev.touches[0].clientY;
