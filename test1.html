@@ -49,7 +49,7 @@ canvas:hover {
       height: 100%;
       margin: 0px;
       border: 0;
-      overflow: hidden; /*  Disable scrollbars */
+//      overflow: hidden; /*  Disable scrollbars */
       display: block;  /* No floating content on sides */
     }
   </style>
@@ -199,7 +199,6 @@ if(window.addEventListener) {
         this.changeColorP = function (newColor) {
             context.beginPath();
             color = context.strokeStyle = newColor;
-            alert('C: ' + color)
         }
 
         function redraw() {
